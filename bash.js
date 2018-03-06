@@ -7,7 +7,7 @@ process.stdout.write('prompt > ');
 process.stdin.on('data', function (data) {
     var tokens = data.toString().trim().split(' ');
     var cmd = tokens[0];
-    var args = tokens.slice(1);
+    var args = tokens.slice(1).join(' ');
     commands[cmd](args, done)
 });
 

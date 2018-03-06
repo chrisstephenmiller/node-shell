@@ -16,18 +16,29 @@ let commands = {
         });
     },
     echo: function (args, done) {
-        if (args[0] = '$') {
-            commands.args[slice(1)]()
-        }
-        let output = args.join(' ')
+        let output = args.split(' ').map(function (arg) {
+            if (arg[0] === '$') {
+                return process.env[arg.slice(1)];
+            } else {
+                return arg;
+            }  
+        }).join(' ');  
         done(output);
     },
     cat: function (args, done) {
-        let file = './' + args;
-        fs.readFile(file, function (err, data) {
-            if (err) throw err;
-            let output = data;
-            done(output);
+        args = args.split(' ');
+        let texts = [];
+        let count = 0;
+        args.forEach(function (arg, i){
+            fs.readFile(arg, function (err, data) {
+                if (err) throw err;
+                texts[i] = data + '\n';
+                count ++;
+                if (count === args.length) {
+                    let output = texts.join(' ');
+                    done(output);
+                }
+            })
         })
     },
     head: function (args, done) {
@@ -39,7 +50,7 @@ let commands = {
         });
     },
     tail: function (args, done) {
-        let file = './' + args.toString();
+        let file = './' + args;
         fs.readFile(file, function (err, data) {
             if (err) throw err;
             let output = data.toString().split('\n').slice(-6).join('\n');
@@ -47,7 +58,7 @@ let commands = {
         });
     },
     sort: function (args, done) {
-        let file = './' + args.toString();
+        let file = './' + args;
         fs.readFile(file, function (err, data) {
             if (err) throw err;
             let output = data.toString().split('\n').sort().join('\n');
@@ -55,7 +66,7 @@ let commands = {
         });
     },
     wc: function (args, done) {
-        let file = './' + args.toString();
+        let file = './' + args;
         fs.readFile(fileName, function (err, data) {
             if (err) throw err;
             let output = data.toString().split('\n').length.toString();
@@ -63,7 +74,7 @@ let commands = {
         });
     },
     uniq: function (args, done) {
-        let file = './' + args.toString();
+        let file = './' + args;
         fs.readFile(file, function (err, data) {
             if (err) throw err;
             let lines = data.toString().split('\n').sort();
